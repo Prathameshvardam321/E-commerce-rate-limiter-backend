@@ -44,6 +44,12 @@ async function consumeSystemAlerts() {
                 console.log("⚠️ System Alert Received:", payload);
 
                 // Send Slack, Email, raise ticket, etc.
+                // await Promise.all([
+                //     slackService.sendToChannel('#system-alerts', formatSlackMessage(payload)),
+                //     emailService.sendAlertEmail(payload),
+                //     ticketingService.createIncident(payload),
+                //     alertLogRepository.save(payload),
+                // ]);
             } catch (err) {
                 console.error("❌ Error handling system alert message:", err);
             }
@@ -90,6 +96,8 @@ async function consumeBlacklistedEvents() {
                 //         : ` IP ${payload.ip} blocklisted`,
                 //     details: supportDetails,
                 // });
+
+
             } catch (err) {
                 console.error("Error handling blacklisted event:", err);
             }

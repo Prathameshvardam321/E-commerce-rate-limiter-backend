@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon node index.js"
+    "dev": "nodemon node src/index.js"
   },
   "keywords": [],
   "author": "",
@@ -22,9 +22,11 @@
     "helmet": "^8.1.0",
     "http-status": "^2.1.0",
     "ioredis": "^5.6.0",
+    "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "kafkajs": "^2.2.4",
     "redis": "^4.7.0",
+    "uuid": "^11.1.0",
     "winston": "^3.17.0",
     "xss-clean": "^0.1.4"
   },

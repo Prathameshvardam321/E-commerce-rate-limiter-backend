@@ -1,4 +1,5 @@
 import httpStatus from 'http-status'
+import { v4 as uuidv4 } from 'uuid'; 
 import config from "../config/config.js";
 import redisClient from '../redis/redis.js';
 import { sendToQueue } from '../queues/consumer.js';
@@ -40,7 +41,8 @@ export const rateLimiter = async (req, res, next) => {
                 eventId: EVENT_IDS.RATE_LIMIT_EXCEEDED.eventId,
                 message: EVENT_IDS.RATE_LIMIT_EXCEEDED.message,
                 redisFallback: false,
-                userKey
+                userKey,
+                contextId: req.contextId,
             });
 
             // Step 4: If strikes exceed the threshold, block the user for a specific period.
@@ -63,6 +65,7 @@ export const rateLimiter = async (req, res, next) => {
                     requestCount: currentRequests,
                     blockDuration: config.RATE_LIMIT.BLACK_LIST.BLOCK_DURATION_SECONDS,
                     timestamp: Date.now(),
+                    contextId: req.contextId,
                 });
             }
 
@@ -98,6 +101,7 @@ export const rateLimiter = async (req, res, next) => {
                 ip: req.ip,
                 userId: req.user?.id || null,
                 error: err.message,
+                contextId: req.contextId,
             });
         }
 
@@ -123,7 +127,8 @@ export const rateLimiter = async (req, res, next) => {
                     eventId: EVENT_IDS.RATE_LIMIT_EXCEEDED.eventId,
                     message: EVENT_IDS.RATE_LIMIT_EXCEEDED.message,
                     redisFallback: false,
-                    userKey
+                    userKey,
+                    contextId: req.contextId,
                 });
 
                 return res.status(httpStatus.TOO_MANY_REQUESTS).json({

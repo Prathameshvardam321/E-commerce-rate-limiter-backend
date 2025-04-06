@@ -4,10 +4,12 @@ import productsRouter from "./productsRouter/product.router.js";
 import checkoutRouter from "./checkoutRouter/checkout.router.js";
 import generateTokenRouter from "./generateToken/generateTokenRouter.js";
 import { auth } from "../../middlewares/auth.js";
+import { contextMiddleware } from "../../middlewares/contextMiddleware.js";
+
 
 
 const router = express.Router();
-
+router.use(contextMiddleware);
 const protectedRouted = [
     {
         path: "/checkout",

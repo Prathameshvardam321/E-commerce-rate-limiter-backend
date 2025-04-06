@@ -2,7 +2,6 @@ import config from "../config/config.js";
 import { kafkaProducer, initKafkaProducer } from "./transports/kafkaProducer.js";
 
 export async function sendToQueue(topic, payload) {
-    console.log({topic, payload})
     const provider = config.QUEUES.PROVIDER;
     switch (provider) {
         case "kafka":

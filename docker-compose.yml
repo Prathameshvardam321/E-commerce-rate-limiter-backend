@@ -1,0 +1,79 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    container_name: ecommerce_api
+    ports:
+      - "${PORT:-4000}:4000"
+    depends_on:
+      - redis
+      - kafka
+      - rabbitmq
+    environment:
+      - PORT=4000
+      - MAX_REQUESTS=5
+      - WINDOW_SIZE_IN_MINUTES=15
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - RABBITMQ_URL=amqp://rabbitmq
+      - RABBITMQ_QUEUE_NAME=rate_limiter_logs
+      - QUEUE_RATE_LIMIT_EXCEEDED=rate-limit-exceeded
+      - QUEUE_SYSTEM_ALERTS=system-alerts
+      - ALERTS_ENABLED=true
+      - ALERTS_SEVERITY=high
+      - ALERTS_SERVICE_NAME=rate-limiter
+      - KAFKA_TOPIC_SYSTEM_ALERTS=system-alerts
+      - BLACKLIST_ENABLED=true
+      - BLACKLIST_STRIKE_THRESHOLD=3
+      - BLACKLIST_STRIKE_WINDOW_SECONDS=600
+      - BLACKLIST_BLOCK_DURATION_SECONDS=36
+      - BLACKLIST_BURST_LIMIT=10
+      - BLACKLIST_BURST_WINDOW_SECONDS=30
+      - KAFKA_BROKERS=kafka:9092
+      - KAFKA_CLIENT_ID=rate-limiter-service
+      - KAFKA_GROUP_ID=rate-limiter-group
+      - KAFKA_TOPIC_RATE_LIMIT_EXCEEDED=rate-limit-exceeded
+      - KAFKA_BLACKLISTED_TOPIC=blacklisted-events
+    volumes:
+      - .:/app
+    command: npm run dev
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"     # Main RabbitMQ port
+      - "15672:15672"   # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1

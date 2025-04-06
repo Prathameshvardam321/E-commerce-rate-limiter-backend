@@ -14,7 +14,7 @@ async function consumeRateLimitEvents() {
     await consumer.subscribe({ topic: config.KAFKA.TOPICS.RATE_LIMIT_EXCEEDED, fromBeginning: false });
 
     console.log(`🚀 Listening for rate-limit events on topic "${config.KAFKA.TOPICS.RATE_LIMIT_EXCEEDED}"`);
-
+    // i can perform db validation here for payload input based event ids
     await consumer.run({
         eachMessage: async ({ message }) => {
             try {
@@ -44,6 +44,7 @@ async function consumeSystemAlerts() {
                 console.log("⚠️ System Alert Received:", payload);
 
                 // Send Slack, Email, raise ticket, etc.
+                // ideas to be implmented
                 // await Promise.all([
                 //     slackService.sendToChannel('#system-alerts', formatSlackMessage(payload)),
                 //     emailService.sendAlertEmail(payload),

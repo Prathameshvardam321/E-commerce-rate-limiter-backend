@@ -32,7 +32,7 @@ export const rateLimiter = async (req, res, next) => {
         
         
         if (currentRequests > config.RATE_LIMIT.MAX_REQUESTS) {
-            await sendToQueue(config.KAFKA.TOPICS.RATE_LIMIT_EXCEEDED, {
+             sendToQueue(config.KAFKA.TOPICS.RATE_LIMIT_EXCEEDED, {
                 ip: req.ip,
                 userId: req.user?.id || null,
                 route: req.originalUrl,
@@ -55,7 +55,7 @@ export const rateLimiter = async (req, res, next) => {
                 config.RATE_LIMIT.BLACK_LIST.BLOCK_DURATION_SECONDS
                 );
 
-                await sendToQueue(config.KAFKA.TOPICS.BLACKLISTED, {
+                 sendToQueue(config.KAFKA.TOPICS.BLACKLISTED, {
                     userKey,
                     eventId: EVENT_IDS.BLOCK_LISTED.eventId,
                     message: EVENT_IDS.BLOCK_LISTED.message,
@@ -89,7 +89,7 @@ export const rateLimiter = async (req, res, next) => {
 
         // 🚨 Send alert if enabled
         if (config.ALERTS.ENABLED) {
-            await sendToQueue(config.KAFKA.TOPICS.SYSTEM_ALERTS, {
+             sendToQueue(config.KAFKA.TOPICS.SYSTEM_ALERTS, {
                 userKey,
                 service: config.ALERTS.SERVICE_NAME,
                 type: "redis_down",
